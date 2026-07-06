@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: chaos-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/orders/**
+        - id: inventory-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/inventory/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# Default chaos profile - tweak live via POST /chaos/config
+chaos:
+  enabled: false
+  latency-probability: 0.1
+  latency-ms: 3000
+  error-probability: 0.05
+  error-status: 503
+  dropped-connection-probability: 0.02
